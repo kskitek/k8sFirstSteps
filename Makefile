@@ -4,7 +4,7 @@ all: deps test run
 
 PROJECT_NAME=k8sFirstSteps
 PROJECT_REPOSITORY=github.com/KSkitek/$(PROJECT_NAME)
-DOCKER_REGISTRY=noneYet
+DOCKER_REGISTRY=none_yet
 
 deps:
 	dep ensure

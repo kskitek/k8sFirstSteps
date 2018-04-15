@@ -10,4 +10,4 @@ Gopkg.lock
 
 out/
 
-k8sFirstSteps
+k8sFirstSteps*
