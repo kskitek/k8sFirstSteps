@@ -1,0 +1,43 @@
+version: '3'
+services:
+  influx:
+    image: influxdb
+    ports:
+      - 8086:8086
+    expose:
+      - 8086
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    environment:
+      - INFLUXDB_DB=mes
+    networks:
+      - inf
+  
+  chronograf:
+    image: chronograf
+    ports:
+      - 8888:8888
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+    networks:
+      - inf
+
+  generator:
+    image: none_yet
+    ports:
+      - 8080:8080
+    deploy:
+      resources:
+        limits:
+          memory: 5M
+    networks:
+      - inf
+    depends_on:
+      - influx
+
+networks:
+  inf:
