@@ -1,0 +1,13 @@
+@startuml
+skinparam dpi 200
+
+() REST as rest
+[DB] as db <<InfluxDB>>
+[Generator] as gen <<GO>>
+[Dashboard] as mon <<Chronograf>>
+
+rest -- gen
+gen - db
+db -up- mon
+
+@enduml

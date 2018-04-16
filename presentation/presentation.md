@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>k8s First Steps</title>
-    <meta charset="utf-8"/>
-    <link rel="stylesheet" href="slides.css"/>
-  </head>
-  <body>
-    <textarea id="source">
 name: inverse
 layout: true
 class: center, middle, inverse
@@ -89,12 +80,4 @@ layout: true
 class: center, middle, inverse
 # Questions?
 
-    </textarea>
-    <script src="https://remarkjs.com/downloads/remark-0.14.0.min.js">
-    // <script src="https://remarkjs.com/downloads/remark-latest.min.js">
-    </script>
-    <script>
-    var slideshow = remark.create();
-    </script>
-  </body>
-</html>
+    
