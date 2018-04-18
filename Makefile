@@ -26,7 +26,7 @@ run: compile
 	./$(PROJECT_NAME)
 
 compile-linux: test
-	env GOOS=linux go build -o $(PROJECT_NAME)-linux
+	env GOOS=linux go build -o $(PROJECT_NAME)
 
 dbuild: compile-linux
 	docker build -t $(DOCKER_REGISTRY) .
