@@ -99,14 +99,14 @@ kubectl get all
 ---
 # k8s deployment building blocks
 
-* Docker under the hood
+* Containers under the hood
 * Workloads-Pod
 * Controllers
 * Service
-* Configuration
 * Storage
-* Administration
+* Configuration & Administration
 
+.footnote[https://kubernetes.io/docs/concepts/]
 ---
 # Pod
 
@@ -115,15 +115,50 @@ kubectl get all
 ---
 # Pod
 
+Basic building block.
+
 Usually you don't create it by yourself. 
 
-TODO pod from single image
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpcmd
+spec:
+  containers:
+    - name: httpcmd
+      image: registry.gitlab.com/kskitek/httpcmd:latest
+```
 
 ---
 # Controllers
 
+* Deployments
+* ReplicationControllers
+* ReplicaSets
+* StatefulSets
+* CronJobs
+
+???
+You describe a desired state in a Deployment 
+```bash
+kubectl rollout history
+kubectl rollout undo
+kubectl scale deployment
+kubectl set image
+```
+
 ---
-# ...
+# Storage
+
+* Volumes
+* PersistentVolumes
+
+???
+
+Volumes in Docker are just directories..
+
+In k8s Volume lives inside Pod. Kill a container (Deployment) inside 
 
 ---
 # Secrets
@@ -136,8 +171,21 @@ kubectl create secret docker-registry gitlab
  --docker-password=???
 ```
 
+???
+Administration & Configuration
+
+Also:
+* ConfigMaps
+* Labels
+* Proxy
+* Device Plugins (GPUs, TPUs, RDMA)
+* Certificates, Auth, Authorization
+* Metrics and Auditing
+
 ---
 # Why?
+
+TODO https://thenewstack.io/kubernetes-an-overview/
 
 ---
 # Contenerization - docker-compose
@@ -197,15 +245,19 @@ _
 ]
 
 ---
+# kompose.io
+
+```bash
+kompose convert -f docker-compose.yaml
+```
+
+---
 # Dashboard
 
 ```terminal
 kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
 ```
 ![](https://d33wubrfki0l68.cloudfront.net/a144cb4570dc95ebc2e35b4b748a0e5ee71879dd/e3d2d/images/docs/ui-dashboard-node.png)
-
----
-# kompose.io
 
 ---
 # minikube
