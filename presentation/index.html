@@ -14,44 +14,110 @@ class: center, middle, inverse
 # Kubernetes first steps
 
 .footnote[http://github.com/KSkitek/k8sFirstSteps]
+???
+* I work at PSI
+* I wanted to introduce k8s to my team. I will try to introduce anyone who is willing to listen ;)
+* I don't really have k8s production experience (yet)
+
 ---
 layout: false
 # Simple-complex app
 
-TODO add app arch image
-[app-arch.svg]
+![](app-arch.svg)
 
 ---
 # What is kubernetes?
 
+[Kubernetes](kubernetes.io) is an open-source system for automating deployment, scaling, and management of containerized applications.
+
 Not an orchestrator but rather an controller, 
   a manager of containers that promisses to keep desired state of containers configuration.
+
+![](ui-dashboard-node.png.jpg)
+<!-- .footnote[kubernetes.io] -->
+
+---
+# Contenerization - Docker
+
+```Dockerfile
+FROM scratch
+
+EXPOSE 8080
+
+COPY k8sFirstSteps-linux /usr/bin/app
+ENTRYPOINT [ "/usr/bin/app", "8080" ]
+```
+
+---
+# Create a k8s cluster
+
+```bash
+gcloud beta container clusters create "cluster-1"
+  --machine-type "g1-small"
+  --preemptible
+  --num-nodes "3"
+```
+
+---
+# The "real" command
+
+```bash
+gcloud beta container clusters create "cluster-1"
+  --machine-type "g1-small"
+  --preemptible
+  --num-nodes "3"
+  --enable-cloud-logging
+  --disk-size "10"
+  --cluster-version "1.9.6-gke.0"
+  --username "admin"
+  --scopes "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append"
+  --enable-cloud-monitoring 
+  --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard
+```
+???
+```
+gcloud beta container clusters create "cluster-1" --machine-type "g1-small" --preemptible --num-nodes "3" --enable-cloud-logging --disk-size "10" --cluster-version "1.9.6-gke.0" --username "admin" --scopes "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" --enable-cloud-monitoring  --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard
+```
+
+---
+# Start using the cluster
+
+```bash
+gcloud container clusters get-credentials test1
+make dpush
+kubectl run k8sfs --image eu.gcr.io/jugpoznan2018/k8sfirststeps
+kubectl get all
+```
+???
+```
+gcloud container clusters get-credentials test1
+make dpush
+kubectl run k8sfs --image eu.gcr.io/jugpoznan2018/k8sfirststeps
+kubectl get all
+```
 
 ---
 # k8s deployment building blocks
 
-## Docker under the hood
-## Workloads-Pod
-## Controllers
-## Service
-## Configuration
-## Storage
-## Administration
-
----
-# Docker
-
-TODO add Dockerfile
-
----
-# docker-compose
+* Docker under the hood
+* Workloads-Pod
+* Controllers
+* Service
+* Configuration
+* Storage
+* Administration
 
 ---
 # Pod
 
-TODO pod from single image
+![](pod.jpg)
+
+---
+# Pod
 
 Usually you don't create it by yourself. 
+
+TODO pod from single image
 
 ---
 # Controllers
@@ -60,13 +126,95 @@ Usually you don't create it by yourself.
 # ...
 
 ---
+# Secrets
+
+```bash
+kubectl create secret docker-registry gitlab
+ --docker-server=registry.gitlab.com
+ --docker-username=kskitek
+ --docker-email=krzysztof.skitek@gmail.com
+ --docker-password=???
+```
+
+---
 # Why?
+
+---
+# Contenerization - docker-compose
+.left-column[
+```yaml
+version: '3'
+services:
+  influx:
+    image: influxdb
+    ports:
+      - 8086:8086
+    expose:
+      - 8086
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    environment:
+      - INFLUXDB_DB=mes
+  
+  chronograf:
+    image: chronograf
+    ports:
+      - 8888:8888
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+```
+]
+.right-column[
+```yaml
+  generator:
+    image: none_yet
+    ports:
+      - 8080:8080
+    deploy:
+      resources:
+        limits:
+          memory: 5M
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+```
+]
+
+---
+# Dashboard
+
+```terminal
+kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+```
+![](https://d33wubrfki0l68.cloudfront.net/a144cb4570dc95ebc2e35b4b748a0e5ee71879dd/e3d2d/images/docs/ui-dashboard-node.png)
 
 ---
 # kompose.io
 
 ---
 # minikube
+
+---
+# Private docker images
+
+TODO deployment with private image
+Secrets
 
 ---
 # GKE
