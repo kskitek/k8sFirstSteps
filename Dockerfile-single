@@ -1,0 +1,4 @@
+FROM scratch
+EXPOSE 8080
+COPY k8sFirstSteps-linux  /usr/bin/k8sFirstSteps
+ENTRYPOINT [ "/usr/bin/k8sFirstSteps" , "8080" ]
