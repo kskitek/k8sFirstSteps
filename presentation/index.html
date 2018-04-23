@@ -134,13 +134,15 @@ spec:
 # Controllers
 
 * Deployments
-* ReplicationControllers
 * ReplicaSets
+* ReplicationControllers
 * StatefulSets
 * CronJobs
 
 ???
 You describe a desired state in a Deployment 
+
+Pod + ReplicaSet ~= Deployment
 ```bash
 kubectl rollout history
 kubectl rollout undo
