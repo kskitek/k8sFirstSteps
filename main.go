@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/KSkitek/k8sFirstSteps/influx"
@@ -55,10 +56,14 @@ func setupHTTPServer(port *int) (string, *httprouter.Router) {
 
 	router.GET("/set/:value", loggingHandler(set))
 	router.GET("/healthz", healthz)
+	router.GET("/killme", loggingHandler(killme))
 	router.NotFound = notFound
 	log.Info("HTTP Server set up")
 
 	return serverAddr, router
+}
+func killme(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	os.Exit(-1)
 }
 
 func set(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
@@ -76,7 +81,20 @@ func set(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 
 func intFromParams(p httprouter.Params) (int, error) {
 	s := p.ByName("value")
-	return strconv.Atoi(s)
+	i, err := strconv.Atoi(s)
+	return handleNegativeValue(i, err)
+}
+
+func handleNegativeValue(v int, err error) (int, error) {
+	if err != nil {
+		return v, err
+	}
+	if v < 0 {
+		errStr := fmt.Sprintf("value %d is negative", v)
+		log.Panic(errStr)
+		// return v, errors.New(errStr)
+	}
+	return v, nil
 }
 
 func healthz(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
