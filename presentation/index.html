@@ -34,7 +34,6 @@ Not an orchestrator but rather an controller,
   a manager of containers that promisses to keep desired state of containers configuration.
 
 ![](ui-dashboard-node.png.jpg)
-<!-- .footnote[kubernetes.io] -->
 
 ---
 # Contenerization - Docker
@@ -115,7 +114,7 @@ kubectl get all
 ---
 # Pod
 
-Basic building block.
+Basic building block. A logically grouped collection of containers.
 
 Usually you don't create it by yourself. 
 
@@ -126,8 +125,10 @@ metadata:
   name: httpcmd
 spec:
   containers:
-    - name: httpcmd
-      image: registry.gitlab.com/kskitek/httpcmd:latest
+  - name: httpcmd
+    image: registry.gitlab.com/kskitek/httpcmd:latest
+  imagePullSecrets:
+  - name: gitlab
 ```
 
 ---
@@ -137,6 +138,7 @@ spec:
 * ReplicaSets
 * ReplicationControllers
 * StatefulSets
+* DaemonSet
 * CronJobs
 
 ???
@@ -185,11 +187,6 @@ Also:
 * Metrics and Auditing
 
 ---
-# Why?
-
-TODO https://thenewstack.io/kubernetes-an-overview/
-
----
 # Contenerization - docker-compose
 .left-column[
 ```yaml
@@ -199,8 +196,6 @@ services:
     image: influxdb
     ports:
       - 8086:8086
-    expose:
-      - 8086
     deploy:
       resources:
         limits:
@@ -221,17 +216,15 @@ services:
 .right-column[
 ```yaml
   generator:
-    image: none_yet
+    image: eu.gcr.io/jug/k8sfs:0.1
     ports:
       - 8080:8080
     deploy:
       resources:
         limits:
           memory: 5M
-
-
-
-
+    depends_on:
+      - influx
 
 
 
@@ -253,43 +246,46 @@ _
 kompose convert -f docker-compose.yaml
 ```
 
----
-# Dashboard
-
-```terminal
-kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+???
+```bash
+kubectl delete
+watch kubectl get po,deploy,svc
+kompose convert
+kubectl apply
+kubectl get all
+Add Type: LoadBalancer
+http :8080/set/20 /asdf /-20
+# kubectl delete svc,deploy -l io.kompose.service
+git checkout negative-values
+kubectl label color blue
+make dpush
+kubectl apply
 ```
-![](https://d33wubrfki0l68.cloudfront.net/a144cb4570dc95ebc2e35b4b748a0e5ee71879dd/e3d2d/images/docs/ui-dashboard-node.png)
 
 ---
-# minikube
+# Honorable mentions
 
----
-# Private docker images
-
-TODO deployment with private image
-Secrets
-
----
-# GKE
-
----
-# gcloud build triggers
-
----
-# gitlab integration
-
----
-# Jenkins X
-
----
-# Helm
+* minikube
+* GKE
+* Gitlab k8s integration
+* Jenkins X
+* gcloud build triggers
+* Helm
 
 ---
 name: inverse
 layout: true
 class: center, middle, inverse
+
 # Questions?
+
+---
+---
+layout: false
+# Materials
+
+* [kubernetes.io](kubernetes.io)
+* [EVE Online Pod](https://updates.eveonline.com/date/2017-05-06/)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-0.14.0.min.js">
