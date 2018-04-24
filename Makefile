@@ -3,8 +3,9 @@
 all: deps test run
 
 PROJECT_NAME=k8sFirstSteps
+VERSION=0.2
 PROJECT_REPOSITORY=github.com/KSkitek/$(PROJECT_NAME)
-DOCKER_REGISTRY=eu.gcr.io/jugpoznan2018/k8sfirststeps:latest
+DOCKER_REGISTRY=eu.gcr.io/jugpoznan2018/k8sfirststeps:$(VERSION)
 
 deps:
 	dep ensure
@@ -35,9 +36,8 @@ drun: dbuild
 	docker run --rm -it -p 8080:8080 $(DOCKER_REGISTRY)
 
 dpush: dbuild
-	# docker push $(DOCKER_REGISTRY)
-	# gcloud auth configure-docker
-	# gcloud docker --authorize-only
-	gcloud docker -- push $(DOCKER_REGISTRY)
-	# 
-	# $(DOCKER_REGISTRY)
+	docker push $(DOCKER_REGISTRY)
+	@# gcloud auth configure-docker
+	@# gcloud docker --authorize-only
+	@# gcloud docker -- push $(DOCKER_REGISTRY)
+	@echo $(DOCKER_REGISTRY)

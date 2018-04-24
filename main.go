@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -91,8 +92,7 @@ func handleNegativeValue(v int, err error) (int, error) {
 	}
 	if v < 0 {
 		errStr := fmt.Sprintf("value %d is negative", v)
-		log.Panic(errStr)
-		// return v, errors.New(errStr)
+		return v, errors.New(errStr)
 	}
 	return v, nil
 }

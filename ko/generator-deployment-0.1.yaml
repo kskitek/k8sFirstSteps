@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker-compose.yml
+    kompose.version: 1.12.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: generator
+    color: blue
+  name: generator-0.1
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: generator
+        color: blue
+    spec:
+      containers:
+      - image: eu.gcr.io/jugpoznan2018/k8sfirststeps:latest
+        name: generator
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "5242880"
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker-compose.yml
+    kompose.version: 1.12.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: chronograf
+  name: chronograf
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: chronograf
+    spec:
+      containers:
+      - image: chronograf
+        name: chronograf
+        ports:
+        - containerPort: 8888
+        resources:
+          limits:
+            memory: "52428800"
+      restartPolicy: Always
+status: {}
