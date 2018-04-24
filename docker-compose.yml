@@ -27,7 +27,7 @@ services:
       - inf
 
   generator:
-    image: eu.gcr.io/jugpoznan2018/k8sfirststeps:latest
+    image: eu.gcr.io/jugpoznan2018/k8sfirststeps:0.1
     ports:
       - 8080:8080
     deploy:
