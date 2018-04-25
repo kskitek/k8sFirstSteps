@@ -8,7 +8,7 @@ metadata:
   labels:
     io.kompose.service: generator
     color: blue
-  name: generator-0.1
+  name: generator
 spec:
   replicas: 1
   strategy: {}
@@ -20,7 +20,7 @@ spec:
         color: blue
     spec:
       containers:
-      - image: eu.gcr.io/jugpoznan2018/k8sfirststeps:latest
+      - image: eu.gcr.io/jugpoznan2018/k8sfirststeps:0.1
         name: generator
         ports:
         - containerPort: 8080
