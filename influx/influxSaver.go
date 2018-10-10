@@ -3,8 +3,8 @@ package influx
 import (
 	"time"
 
-	"github.com/KSkitek/k8sFirstSteps/value"
 	influx "github.com/influxdata/influxdb/client/v2"
+	"github.com/kskitek/k8sFirstSteps/value"
 	log "github.com/sirupsen/logrus"
 )
 

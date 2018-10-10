@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/KSkitek/k8sFirstSteps/influx"
-	"github.com/KSkitek/k8sFirstSteps/value"
 	"github.com/julienschmidt/httprouter"
+	"github.com/kskitek/k8sFirstSteps/influx"
+	"github.com/kskitek/k8sFirstSteps/value"
 	log "github.com/sirupsen/logrus"
 )
 
