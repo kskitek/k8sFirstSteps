@@ -45,3 +45,7 @@ dpush-nogo: dbuild-nogo
 dpush: dbuild
 	@ docker push $(DOCKER_REGISTRY)
 	@ echo "Docker image: $(DOCKER_REGISTRY)"
+
+.PHONY: presentation
+presentation:
+	python -m SimpleHTTPServer 8000 &
