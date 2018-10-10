@@ -1,11 +1,9 @@
 version: '3'
 services:
   influx:
-    image: influxdb
+    image: influxdb:alpine
     ports:
       - 8086:8086
-    expose:
-      - 8086
     deploy:
       resources:
         limits:
@@ -16,7 +14,7 @@ services:
       - inf
   
   chronograf:
-    image: chronograf
+    image: chronograf:alpine
     ports:
       - 8888:8888
     deploy:
@@ -27,7 +25,7 @@ services:
       - inf
 
   generator:
-    image: eu.gcr.io/jugpoznan2018/k8sfirststeps:latest
+    image: lertatraining/k8sfirststeps:0.1
     ports:
       - 8080:8080
     deploy:
