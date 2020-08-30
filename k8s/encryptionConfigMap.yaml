@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: encryption
+data:
+  useMeForEncryption: dHk1Vm1taHQwM2F6
+  totallyUseless.json: |-
+    {"a": "b"}
+

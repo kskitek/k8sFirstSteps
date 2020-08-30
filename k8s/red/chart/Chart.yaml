@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Red service
+name: red
+version: 0.1.0

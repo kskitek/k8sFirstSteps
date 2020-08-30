@@ -1,0 +1,53 @@
+replicaCount: 1
+
+ds:
+  mongoHost: lei-mongodb-0.lei-mongodb.default.svc.cluster.local
+  mongoDatabase: lerta
+  mongoSecret: lei-mongo-lerta-db-credentials
+  devicesDatasourceName: LertaIoT
+  influxService: mdm-influxdb-service
+  influxPort: influxdb-api
+  amqpSecret: rabbitmq-credentials
+  amqpService: rabbitmq-internal
+  amqpPort: mdm-rmq-in-amqp
+  amqpWorkinghoursExchange: datasource.v1.workingHours
+  amqpReductionPlansExchange: datasource.v1.reductionPlans
+  amqpCalculatedDataExchange: forwarder.v1.calculated
+  amqpIncomingDevicesExchange: v1.devices.topic
+  tenantCacheExpirationTime: 60
+  defaultDeviceReductionPotential: 0.3
+  authorization: authorization
+  authorizationPort: auth
+  commoditiesOrignalUnits: m3,MJ
+  pvApiCredentialsSecret: pv-credentials
+  timescale:
+      host: timescale
+      port: 5432
+      database: postgres
+      sslmode: disable
+      connTimeout: 30s
+      secret: timescale-users
+      usernameKey: processor-username
+      passwordKey: processor-password
+
+image:
+  repository: 992144473167.dkr.ecr.us-east-1.amazonaws.com/lerta/service-datasource
+  tag: latest
+  pullPolicy: IfNotPresent
+
+security:
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8086
+
+env: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

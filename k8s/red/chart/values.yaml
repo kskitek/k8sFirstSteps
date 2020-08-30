@@ -1,0 +1,23 @@
+image:
+  name: kskitek/k8sfirststeps
+  tag: v2
+  imagePullPolicy: IfNotPresent
+
+service:
+  port: 8080
+
+blueURL: http://blue:8080
+sleep: 5s
+secretPath: /var/encryption
+secretName: encryption
+logsPath: /var/logs
+
+extraEnv: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

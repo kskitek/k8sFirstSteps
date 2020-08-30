@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "red.fullnameOverride" . }}
+  chart: {{ include "red.chart" . }}
+  release: {{ .Release.Name }}
+  labels:
+    app: rvb
+    colour: red
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      colour: red
+  template:
+    metadata:
+      labels:
+        colour: red
+    spec:
+      containers:
+      - name: red
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+          - name: BLUE_URL
+            value: {{ .Values.blueURL }}
+          - name: SLEEP_DURATION
+            value: {{ .Values.sleep | quote }}
+          - name: ENCRYPTION_SECRET_PATH
+            value: {{ .Value.secretPath }}
+          - name: LOGS_PATH
+            value: {{ .Value.logsPath }}
+        {{- with .Values.extraEnv }}
+{{ toYaml . | indent 12 }}
+        {{- end }}
+        volumeMounts:
+        - name: encryptionSecret
+          mountPath: {{ .Value.secretPath }}
+          readOnly: true
+      volumes:
+      - name: encryptionSecret
+        secret:
+          secretName: {{ .Value.secretName }}
+        resources:
+ {{ toYaml .Values.resources | indent 12 }}
+     {{- with .Values.nodeSelector }}
+      nodeSelector:
+ {{ toYaml . | indent 8 }}
+     {{- end }}
+     {{- with .Values.affinity }}
+      affinity:
+ {{ toYaml . | indent 8 }}
+     {{- end }}
+     {{- with .Values.tolerations }}
+      tolerations:
+ {{ toYaml . | indent 8 }}
+     {{- end }}

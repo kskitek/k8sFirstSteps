@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: red
+  labels:
+    app: rvb
+    colour: red
+spec:
+  selector:
+    matchLabels:
+      colour: red
+  template:
+    metadata:
+      labels:
+        colour: red
+    spec:
+      containers:
+      - name: red
+        image: kskitek/red:v1
+        ports:
+        - containerPort: 8080

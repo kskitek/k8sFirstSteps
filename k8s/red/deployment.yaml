@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ds.fullname" . }}
+  labels:
+    app: {{ include "ds.name" . }}
+    chart: {{ include "ds.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "ds.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "ds.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.security.runAsUser }}
+    {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+      {{- range . }}
+        - name: {{ . }}
+      {{- end }}
+    {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MONGO_HOST
+              value: {{ .Values.ds.mongoHost }}
+            - name: MONGO_PORT
+              value: "27017"
+            - name: MONGO_DBNAME
+              value: {{ .Values.ds.mongoDatabase | quote }}
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ .Values.ds.mongoSecret }}
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ .Values.ds.mongoSecret }}
+            - name: MONGO_HEARTBEAT
+              value: "30s"
+            - name: MONGO_TIMEOUT
+              value: "30s"
+            - name: MONGO_RECONNECT_TIMEOUT
+              value: "5s"
+            - name: MONGO_RECONNECT_SLEEP
+              value: "1s"
+            - name: DEVICES_DATASOURCE_NAME
+              value: {{ .Values.ds.devicesDatasourceName }}
+            - name: INFLUX_PATH
+              value: http://{{ .Values.ds.influxService }}:$({{ include "ds.env" .Values.ds.influxService }}_SERVICE_PORT_{{ include "ds.env" .Values.ds.influxPort }})
+          {{- with .Values.ds.influxUser }}
+            - name: INFLUX_USER
+              value: {{ . | quote }}
+          {{- end }}
+          {{- with .Values.ds.influxPassword }}
+            - name: INFLUX_PASS
+              value: {{ . | quote }}
+          {{- end }}
+            - name: TENANT_CACHE_EXPIRATION_TIME
+              value: "{{ .Values.ds.tenantCacheExpirationTime }}"
+            - name: AMQP_INTERNAL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ .Values.ds.amqpSecret }}
+            - name: AMQP_INTERNAL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ .Values.ds.amqpSecret }}
+            - name: AMQP_INTERNAL_URI
+              value: amqp://%AMQP_USER:%AMQP_PASSWORD@{{ .Values.ds.amqpService }}:5672
+            - name: AMQP_WORKINGHOURS_EXCHANGE
+              value: {{ .Values.ds.amqpWorkinghoursExchange }}
+            - name: AMQP_REDUCTION_PLANS_EXCHANGE
+              value: {{ .Values.ds.amqpReductionPlansExchange }}
+            - name: DEFAULT_DEVICE_REDUCTION_POTENTIAL
+              value: {{ .Values.ds.defaultDeviceReductionPotential | quote }}
+            - name: AMQP_CALCULATED_DATA_EXCHANGE
+              value: {{ .Values.ds.amqpCalculatedDataExchange }}
+            - name: AMQP_INCOMING_DEVICES_EXCHANGE
+              value: {{ .Values.ds.amqpIncomingDevicesExchange }}
+            - name: AUTHORIZATION_URL
+              value: http://{{ .Values.ds.authorization }}:$({{ include "ds.env" .Values.ds.authorization }}_SERVICE_PORT_{{ include "ds.env" .Values.ds.authorizationPort }})
+            - name: APPLICATION_MODE
+              value: {{ .Values.ds.appMode }}
+            - name: CREDENTIALS_CACHE_EXPIRATION_TIME
+              value: "60"
+            - name: COMMODITIES_ORIGINAL_UNITS
+              value: {{ .Values.ds.commoditiesOrignalUnits }}
+            - name: KWH_GASFACTOR
+              value: "11.7"
+            - name: KWH_HEATFACTOR
+              value: "3.6"
+            - name: ZONE_TREE_MAX_DEPTH
+              value: "10"
+            - name: TIMESCALE_HOST
+              value: {{ .Values.ds.timescale.host }}
+            - name: TIMESCALE_PORT
+              value: {{ .Values.ds.timescale.port | quote }}
+            - name: TIMESCALE_DATABASE
+              value: {{ .Values.ds.timescale.database }}
+            - name: TIMESCALE_SSLMODE
+              value: {{ .Values.ds.timescale.sslmode }}
+            - name: TIMESCALE_CONNECTIONTIMEOUT
+              value: {{ .Values.ds.timescale.connTimeout }}
+            - name: TIMESCALE_USER
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.ds.timescale.usernameKey }}
+                  name: {{ .Values.ds.timescale.secret }}
+            - name: TIMESCALE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.ds.timescale.passwordKey }}
+                  name: {{ .Values.ds.timescale.secret }}
+            {{- if .Values.ds.encodingKey }}
+            - name: PV_API_CREDENTIALS_ENCODING_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: key
+                  name: {{ .Values.ds.pvApiCredentialsSecret }}
+            {{- end }}
+          {{- with .Values.env }}
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          ports:
+            - name: cp-ds
+              containerPort: 8086
+              protocol: TCP
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
