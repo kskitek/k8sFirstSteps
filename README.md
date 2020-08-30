@@ -11,7 +11,7 @@ really need those slides).
 
 ## Prerequisites:
 
-- basis docker knowledge - this repository just skims docker topics
+- basic docker knowledge - this repository just skims over docker topics
 - [docker](https://docs.docker.com/get-docker/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [kind](https://github.com/kubernetes-sigs/kind)
