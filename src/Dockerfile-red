@@ -1,4 +1,5 @@
 FROM alpine
+# using alpine because ls and cat are needed
 
 COPY red/red /bin/red
 

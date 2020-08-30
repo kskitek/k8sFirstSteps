@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -41,14 +40,17 @@ func startPinging() {
 	}
 	for {
 		<-time.After(sleep)
+		log.Println("Calling blue")
 		resp, err := client.Do(request)
 		if err != nil {
 			log.Println("Failed request to BLUE: " + err.Error())
 			continue
 		}
 
-		body, _ := ioutil.ReadAll(resp.Body)
-		log.Printf("Response: {code: %d, body: %s}\n", resp.StatusCode, body)
+		if resp.StatusCode > 300 {
+			body, _ := ioutil.ReadAll(resp.Body)
+			log.Printf("Request to blue failed: {code: %d, body: %s}\n", resp.StatusCode, body)
+		}
 	}
 }
 
@@ -57,6 +59,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
+	log.Println("Got data from blue")
 
 	var data k8sFirstSteps.Data
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -75,7 +78,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("GOT: [%s] at %s", decodedValue, data.GeneratedAt.Format(time.RFC3339))
+	log.Printf("GOT: [%s] at %s\n", decodedValue, data.GeneratedAt.Format(time.RFC3339))
 	// TODO save it to file
 }
 

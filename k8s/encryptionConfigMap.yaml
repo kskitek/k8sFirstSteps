@@ -4,6 +4,7 @@ metadata:
   name: encryption
 data:
   useMeForEncryption: dHk1Vm1taHQwM2F6
+  port: 8080
   totallyUseless.json: |-
     {"a": "b"}
 

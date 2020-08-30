@@ -16,6 +16,7 @@ spec:
     spec:
       containers:
       - name: red
-        image: kskitek/red:v1
+        image: kskitek/k8sfirststeps:red-v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080

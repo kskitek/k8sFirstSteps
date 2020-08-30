@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue
+  labels:
+    app: rvb
+    colour: blue
+spec:
+  selector:
+    matchLabels:
+      colour: blue
+  template:
+    metadata:
+      labels:
+        colour: blue
+    spec:
+      containers:
+      - name: blue
+        image: kskitek/k8sfirststeps:blue-v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: RED_URL
+            value: http://red:8080
+          - name: PORT
+            value: "8080"

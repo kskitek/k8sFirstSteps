@@ -7,7 +7,7 @@
 * Kubernetes:
   * Is installed on bunch of machines
   * Runs all of the containers on those machines
-  * Always tries to reach desired state (i.e. something dies)
+  * Always tries to reach desired state (i.e. when something dies)
   * Can do everything docker can
   * Can utilize cloud infrastructure (volumes, public IPs, scaling...)
 

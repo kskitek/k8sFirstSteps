@@ -1,6 +1,6 @@
 image:
   name: kskitek/k8sfirststeps
-  tag: v2
+  tag: red-v1
   imagePullPolicy: IfNotPresent
 
 service:
@@ -8,9 +8,8 @@ service:
 
 blueURL: http://blue:8080
 sleep: 5s
-secretPath: /var/encryption
-secretName: encryption
-logsPath: /var/logs
+secretPath: "/var/encryption"
+logsPath: "/var/logs"
 
 extraEnv: []
 

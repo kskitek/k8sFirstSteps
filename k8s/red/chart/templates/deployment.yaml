@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "red.fullnameOverride" . }}
-  chart: {{ include "red.chart" . }}
-  release: {{ .Release.Name }}
+  name: {{ include "red.fullname" . }}
   labels:
     app: rvb
     colour: red
+    chart: {{ include "red.chart" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -24,27 +24,35 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
         env:
+          - name: PORT
+            value: {{ .Values.service.port | quote }}
           - name: BLUE_URL
             value: {{ .Values.blueURL }}
           - name: SLEEP_DURATION
             value: {{ .Values.sleep | quote }}
           - name: ENCRYPTION_SECRET_PATH
-            value: {{ .Value.secretPath }}
+            value: {{ .Values.secretPath }}
           - name: LOGS_PATH
-            value: {{ .Value.logsPath }}
+            value: {{ .Values.logsPath }}
         {{- with .Values.extraEnv }}
 {{ toYaml . | indent 12 }}
         {{- end }}
         volumeMounts:
-        - name: encryptionSecret
-          mountPath: {{ .Value.secretPath }}
+        - name: encryptionsecret
+          mountPath: {{ .Values.secretPath }}
           readOnly: true
-      volumes:
-      - name: encryptionSecret
-        secret:
-          secretName: {{ .Value.secretName }}
+        - name: logstorage
+          mountPath: {{ .Values.logsPath }}
+          readOnly: false
         resources:
  {{ toYaml .Values.resources | indent 12 }}
+      volumes:
+      - name: encryptionsecret
+        secret:
+          secretName: {{ include "red.fullname" . }}-encryption
+      - name: logstorage
+        persistentVolumeClaim:
+          claimName: {{ include "red.fullname" . }}
      {{- with .Values.nodeSelector }}
       nodeSelector:
  {{ toYaml . | indent 8 }}

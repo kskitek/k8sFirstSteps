@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -64,11 +65,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = client.Do(request)
+	resp, err := client.Do(request)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(err.Error()))
+		return
+	}
+	if resp.StatusCode > 300 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		log.Printf("Request to REd failed: {code: %d, body: %s}\n", resp.StatusCode, body)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
