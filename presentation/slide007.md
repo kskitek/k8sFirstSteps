@@ -1,6 +1,7 @@
 
   Anatomy of kubernetes cluster (simplified)
 
+```
                    ┌──────────┐
                    │API server│
                    └──────────┘
@@ -17,4 +18,4 @@
 │            │   │            │   │            │
 │      node1 │   │      node2 │   │      node3 │
 └────────────┘   └────────────┘   └────────────┘
-
+```
