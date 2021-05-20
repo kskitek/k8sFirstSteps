@@ -1,0 +1,115 @@
+# Kubernetes introduction
+
+Krzysztof Skitek
+
+## Agenda
+
+- Let's start with docker
+- Why kubernetes?
+- Kubernetes cluster architecture
+- Kubernetes resources
+- Tools
+- Troubleshooting
+
+## Let's start with docker
+
+- package the application one time
+- repeatable builds
+- ready to use images
+- not as heavy as VM
+
+## Let's start with docker
+
+![](dockerfile.png)
+
+## Let's start with docker
+
+![](https://docs.docker.com/engine/images/architecture.svg)
+
+## Why kubernetes?
+
+Imagine scenario:
+
+- tens or hundreds of containerized services
+- they are deployed on multiple physical machines
+- repeatable deployment
+- multiple environments
+- reliable operation
+- cheap, throwaway containers
+- cloud ready
+
+## Kubernetes cluster architecture
+
+![](https://d33wubrfki0l68.cloudfront.net/2475489eaf20163ec0f54ddc1d92aa8d4c87c96b/e7c81/images/docs/components-of-kubernetes.svg)
+
+## Where are our k8s clusters?
+
+**It does not matter :)**
+
+Our team currently uses:
+
+- local `kind` clusters
+- aws' Elastic Kubernetes Service
+
+## Let's dig into kubernetes resources
+
+As SWE/SRE we want to declare one time the *"desired state"* and let kubernetes guard it.
+Examples:
+
+- I want to have one instance of PostgreSQL always on, running on high mem machines. Please keep the contents of its disk.
+- I want to have 3 instances of `ingest` running all the time. But don't let single instance use more than 200MiB of RAM.
+- I want to run data migration process every 6 hours
+- I want to run kafka cluster on machines isolated from PostgreSQL
+- ...
+
+Kubernetes always tries to achieve the desired state.
+
+## Resources
+
+## Workload
+
+- `Pod` - real containers running here; one timer
+- `Deployment` - runs pods in a controlled way (restarts, updates, etc...)
+- `Statefulset` - like deployment but helps with stateful workloads (like databases)
+- `Job` - one timer but with ability to restart/track failures
+- `Cronjob` - like job but is scheduled with cron
+
+## Tools
+
+- `aws` CLI - because our cluster is on AWS, we need it to authenticate
+- `eksctl` - used for cluster management
+- `kubectl` - it is a kubernetes CLI
+- `k9s` - commonly used TUI client
+- `Lens` - commonly used GUI client
+
+## Configuration and secrets
+
+- `configmap`
+- `secret` - like config but base64'd and under separate rights controll
+
+## Namespaces
+
+- try finding `kafka` on our cluster
+
+## Services, Ports, Load balancing...
+
+## and everything else..
+
+`kubectl api-resources`
+
+## Troubleshooting
+
+- context
+- namespace
+- delete pod
+- config/secret
+- exec
+- endpoints
+- port-forward
+- debug
+- debug
+- events
+- pvc with pv class
+- rbac
+
+## Questions?
