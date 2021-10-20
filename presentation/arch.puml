@@ -1,0 +1,14 @@
+@startuml
+
+actor User as user
+
+node "K8s Cluster" {
+  component Random as random
+  database InfluxDB as influx
+}
+
+random -> influx: POST :8086/write
+user --> influx: InfluxDB UI at :8086
+user --> random: POST :8080/settings
+
+@enduml

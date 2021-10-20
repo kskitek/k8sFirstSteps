@@ -1,5 +1,0 @@
-FROM scratch
-
-COPY blue/blue /bin/blue
-
-CMD ["blue"]

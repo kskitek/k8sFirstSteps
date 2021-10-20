@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influx
+  labels:
+    component: influx
+    type: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        component: influx
+        type: db
+  template:
+    metadata:
+      labels:
+        component: influx
+        type: db
+    spec:
+      containers:
+      - name: influx
+        image: influxdb:2.0
+        ports:
+        - containerPort: 8086
+        env:
+        - name: DOCKER_INFLUXDB_INIT_MODE
+          value: setup
+        - name: DOCKER_INFLUXDB_INIT_USERNAME
+          value: firstuser
+        - name: DOCKER_INFLUXDB_INIT_PASSWORD
+          value: supersecret
+        - name: DOCKER_INFLUXDB_INIT_ORG
+          value: nobl9
+        - name: DOCKER_INFLUXDB_INIT_BUCKET
+          value: bucket1
+        - name: DOCKER_INFLUXDB_INIT_RETENTION
+          value: 2d

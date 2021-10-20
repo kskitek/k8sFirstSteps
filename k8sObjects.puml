@@ -1,0 +1,32 @@
+@startuml
+
+actor User as user
+
+node "K8s Cluster" as cluster {
+  interface RandomService as randSvc
+  component RandomDeployment as randDeploy {
+    component RandomPod as randPod
+  }
+
+  interface InfluxService as influxSvc
+  component InfluxDeployment as influxDeploy {
+    database InfluxPod as influxPod
+  }
+
+  interface Ingress as ingress
+}
+
+user -[hidden]right- cluster
+
+randSvc -[hidden]- influxSvc
+
+randSvc - randPod
+influxSvc - influxPod
+
+randPod -> influxSvc
+
+user - ingress
+ingress - influxSvc
+ingress - randSvc
+
+@enduml
