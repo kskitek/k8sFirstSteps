@@ -1,13 +1,6 @@
 .idea
 .vscode
-debug
-debug.test
 
 .DS_Store
 
-vendor/
-Gopkg.lock
-
 out/
-
-k8sFirstSteps*

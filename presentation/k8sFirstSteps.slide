@@ -1,0 +1,229 @@
+# Kubernetes workshop
+
+https://github.com/kskitek/k8sFirstSteps
+
+## BigPicture Agenda
+
+* Kubernetes first steps
+* Kubernetes next steps 😊
+
+`+` some short breaks and lunch break
+
+## Agenda
+
+* Anatomy of kubernetes cluster
+* It all starts with containers
+* "My first cluster"
+* Super "simple complex" architecture
+* Pods and Deployments
+* Help me find my container - Services
+* When ENVs are not enough - Configmap
+* Let's talk real app - Secrets
+* Where is my data? - Volumes
+
+## Before we begin
+
+- please ask questions
+- tell me immediately if something is not working
+- if you feel like playing with `kubectl` just do it!
+- slides/code can be cloned from [https://github.com/kskitek/k8sFirstSteps](https://github.com/kskitek/k8sFirstSteps)
+- our yamls will be simple and some parts might not be production grade (imagePullSecret, securityContext, NetworkPolicy, etc.)
+
+## Kubernetes cluster architecture
+
+![](https://d33wubrfki0l68.cloudfront.net/2475489eaf20163ec0f54ddc1d92aa8d4c87c96b/e7c81/images/docs/components-of-kubernetes.svg)
+
+## It all starts with containers
+
+* Docker "need to know":
+  * `docker run -p -e -v --net -m -i -t -u ...`
+  * `docker exec`
+  * `docker secret create`
+  * `docker logs`
+  * `docker stats`
+
+## "My first cluster"
+
+* `kind create cluster --name=workshop`
+* `kubectl get node`
+* `kubectl get all --all-namespaces`
+* `kubectl config get-contexts` or `kubectl config view --minify`
+* `cat ~/.kube/config`
+
+* with Docker Desktop `kubectl config set-context --current --namespace workshop`
+
+## Super "simple complex" architecture
+
+![](arch.png)
+
+## Pods and Deployments
+
+```
+  Pod ~= []Container
+  Deployment = Pod
+```
+
+* check what is running on the cluster:
+  * `kubectl get pod,deploy`
+  * `kubectl get pod,deploy -A`
+* `kubectl run sleep --image alpine -l component=sleep --command -- sleep 10m`
+* `kubectl get pod -o yaml -l component=sleep`
+* deploy InfluxDB
+  * `kubectl apply -f deployment/influx-deployment.yaml`
+* check its status and logs
+
+## Pod and Deployment
+
+Now, write a deployment for `random` service:
+- port: `8080`
+- image: `kskitek/k8sfirststeps:random-latest`
+- env: `INFLUX_URL=http://influx-...:8086` (copy influx pod name)
+
+Reference:
+
+- Docs:
+  - [Pod](https://kubernetes.io/docs/concepts/workloads/pods/)
+  - [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+- API:
+  - [Pod](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#pod-v1-core)
+  - [Deployment](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#deployment-v1-apps)
+
+## Let's play around with our pods
+
+* let the `random` run for a few seconds
+* `kubectl delete pod influx-...`
+* `kubectl get pod,deploy,rs -l component=influx`
+* `kubectl scale deploy influx --replicas=0`
+
+Now we can access our UI:
+
+* `kubectl port-forward deploy/influx 8086`
+* open in the browser [http://localhost:8086](http://localhost:8086)
+
+## Help me find my container - Services
+
+* how do you know what is the IP of a pod?
+  * `kubectl get pod -o wide`
+* what happens when pod is restarted?
+  * `kubectl delete pod ..`
+* services to the rescue!
+* `kubectl get svc -A`
+* types of services:
+  * ClusterIP, NodePort, LoadBalancer, ExternalName, Headless
+  * and not really a Service type: Ingress
+
+## Services
+
+Random:
+* port: 8080
+
+Influx:
+* port: 8086
+
+Reference:
+
+- [Docs](https://kubernetes.io/docs/concepts/services-networking/service/)
+- [API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#service-v1-core)
+
+## When ENVs are not enough - Configmap
+
+* some defaults are hardcoded in the `random`
+* there is no way to share it between services
+* is it possible to pass a config file?
+
+## ConfigMap
+
+* deploy ConfigMap with: min, max, influxUrl
+* configure `random` to set envs GENERATOR_MIN, GENERATOR_MAX, INFLUX_URL using configMap
+
+Reference:
+
+- [Docs](https://kubernetes.io/docs/concepts/configuration/configmap/)
+- [API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#configmap-v1-core)
+- [https://yaml-multiline.info/](https://yaml-multiline.info/)
+
+## Let's talk real app - Secrets
+
+* in real life secrets should be secret 🙈
+* you can use secrets almost the same way as ConfigMaps
+
+## Secrets
+
+* deploy secret with new influxToken
+* use it in `random` as env INFLUX_TOKEN
+
+Reference:
+
+- [Docs](https://kubernetes.io/docs/concepts/configuration/secret/)
+- [API Reference](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#secret-v1-core)
+
+## Where is my data? - Volume
+
+* check data in influx UI
+* `kubectl delete pod -l component=influx`
+* check data again. What happened?
+* introducing PersistentVolume and PersistentVolumeClaim
+* `kubectl get storageclass`
+
+## Volume
+
+* create pvc with 1Gi of storage
+* `kubectl get pv,pvc`
+* configure influx to use this pvc
+* `kubectl delete pod -l component=influx`
+
+Reference:
+
+- Docs:
+  - [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+  - [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+  - [Storage classes provisioning](https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner)
+- [API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#persistentvolumeclaim-v1-core)
+
+## Thank you for the part one 👋
+
+## Part two agenda
+
+* Why the hell Helm?
+* What are operators for?
+* More advanced k8s resources
+* How does k8s work in AWS/kind/any cloud
+  * IAM
+  * Monitoring/Metrics server
+  * Networking
+  * Storage
+  * Nodes and scaling
+
+## Why the hell Helm?
+
+* imagine prod, dev, multicloud deployments
+* different setting/feature flags
+* different scale
+* diferent cloud provider settings
+* how about configuring complex deployments like kafka or influx?
+
+## Introducing Helm
+
+* `helm repo add bitnami https://charts.bitnami.com/bitnami`
+* `helm fetch bitnami/influxdb --untar`
+* lets take a look what is inside
+
+## Helm
+
+* `helm create random`
+
+Reference:
+
+* [go templates](https://pkg.go.dev/text/template)
+* [sprig functions](https://masterminds.github.io/sprig/)
+* [Helm docs](https://helm.sh/docs/topics/)
+
+## What are operators for?
+
+## More advanced k8s resources
+
+* `kubectl api-resources`
+
+## How does k8s work in AWS/kind/any cloud
+
+
