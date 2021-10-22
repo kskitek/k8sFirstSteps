@@ -212,6 +212,13 @@ Reference:
 ## Helm
 
 * `helm create random`
+* `helm template ./random`
+* `helm install random ./random --debug --dry-run`
+* `helm install random ./random`
+* `helm install -f prodvalues.yaml random ./random`
+* `helm install --set ram=4Gi random ./random`
+* `helm upgrade --install --atomic random ./random`
+* `helm history random`
 
 Reference:
 
