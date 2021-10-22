@@ -20,5 +20,15 @@ spec:
           env:
             - name: INFLUX_URL
               value: http://influx:8086
+            - name: GENERATOR_MIN
+              valueFrom:
+                configMapKeyRef:
+                  name: generator
+                  key: min
+            - name: GENERATOR_MAX
+              valueFrom:
+                configMapKeyRef:
+                  name: generator
+                  key: max
           ports:
             - containerPort: 8080
