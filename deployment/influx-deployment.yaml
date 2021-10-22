@@ -40,3 +40,10 @@ spec:
           value: leakybucket
         - name: DOCKER_INFLUXDB_INIT_RETENTION
           value: 2d
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/influxdb2
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: influx
