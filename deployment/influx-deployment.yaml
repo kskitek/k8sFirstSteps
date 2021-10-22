@@ -28,9 +28,12 @@ spec:
         - name: DOCKER_INFLUXDB_INIT_USERNAME
           value: firstuser
         - name: DOCKER_INFLUXDB_INIT_PASSWORD
-          value: supersecret
+          value: verysecret
         - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
-          value: supersecrettoken
+          valueFrom:
+            secretKeyRef:
+              name: influx
+              key: token
         - name: DOCKER_INFLUXDB_INIT_ORG
           value: illuminati
         - name: DOCKER_INFLUXDB_INIT_BUCKET

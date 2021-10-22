@@ -20,6 +20,11 @@ spec:
           env:
             - name: INFLUX_URL
               value: http://influx:8086
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influx
+                  key: token
             - name: GENERATOR_MIN
               valueFrom:
                 configMapKeyRef:
