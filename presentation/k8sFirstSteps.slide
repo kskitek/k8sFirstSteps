@@ -24,9 +24,10 @@ https://github.com/kskitek/k8sFirstSteps
 ## Before we begin
 
 - please ask questions
+- slides/code can be cloned from [https://github.com/kskitek/k8sFirstSteps](https://github.com/kskitek/k8sFirstSteps)
+- Presentation is available under [https://present.skitek.dev](https://present.skitek.dev)
 - tell me immediately if something is not working
 - if you feel like playing with `kubectl` just do it!
-- slides/code can be cloned from [https://github.com/kskitek/k8sFirstSteps](https://github.com/kskitek/k8sFirstSteps)
 - our yamls will be simple and some parts might not be production grade (imagePullSecret, securityContext, NetworkPolicy, etc.)
 
 ## Kubernetes cluster architecture
@@ -192,8 +193,6 @@ Reference:
   * IAM
   * Monitoring/Metrics server
   * Networking
-  * Storage
-  * Nodes and scaling
 
 ## Why the hell Helm?
 
@@ -212,12 +211,12 @@ Reference:
 ## Helm
 
 * `helm create random`
+* I want to be able to override:
+
+  name; min, max ENVs; provide arbitrary ENVs
 * `helm template ./random`
 * `helm install random ./random --debug --dry-run`
-* `helm install random ./random`
-* `helm install -f prodvalues.yaml random ./random`
-* `helm install --set ram=4Gi random ./random`
-* `helm upgrade --install --atomic random ./random`
+* `helm upgrade --install --atomic -f devvalues.yaml random ./random`
 * `helm history random`
 
 Reference:
@@ -228,10 +227,134 @@ Reference:
 
 ## What are operators for?
 
+* it's just a smalll program that talks to API server
+* the program understands well the service that it manages
+* we are using one - `kubectl get deploy -n kafka`
+* eases operation
+  * `kubectl api-resources`
+  * `kubectl get kafkatopic`
+* when should one use/write an operator?
+  * [Kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)
+  * [Operator SDK](https://github.com/operator-framework/operator-sdk)
+
 ## More advanced k8s resources
 
 * `kubectl api-resources`
 
+## ReplicaSet
+
+```
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # modify replicas according to your case
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google_samples/gb-frontend:v3
+```
+
+## Ingress and IngressController
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wildcard-host
+spec:
+  rules:
+  - host: "foo.bar.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/bar"
+        backend:
+          service:
+            name: service1
+            port:
+              number: 80
+  - host: "*.foo.com"
+    http:
+      ...
+```
+
+## Headless Service, Endpoints
+
+* `spec.clusterIP: None`
+* why would anyone do that?
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  clusterIP: None
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 9376
+```
+
+## Limits/access rights
+
+* LimitRange and ResourceQuota
+* PodDisruptionBudget
+* Role, RoleBinding
+* NetworkPolicy
+* ServiceAccount
+
+## Scheduling
+
+* DeamonSet
+* Affinity and Anti-affinity, Node Taints and tolerations
+* HPA and VPA
+
 ## How does k8s work in AWS/kind/any cloud
 
+## Metrics server
+
+* [https://github.com/kubernetes-sigs/metrics-server/](https://github.com/kubernetes-sigs/metrics-server/)
+  * container runtime must implement [container metrics RPC](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/cri-container-stats.md)
+* `kubectl get deploy -n kube-system metrics-server`
+* `kubectl top pod` (or `node`)
+* is returned byt the API - `kubectl proxy` and then:
+  * `http :8001/metrics`
+  * `http :8001/apis/metrics.k8s.io/v1beta1/pods`
+* worth mentioning: `kubectl describe node` returns information about resource allocation
+* there is also [kube state mertics](https://github.com/kubernetes/kube-state-metrics)
+* also, why nodes can be sometimes unavailable even when they are running?
+
+## Networking
+
+.image AWS-networking-1.png 530 _
+
+## Networking
+
+.image AWS-networking-2.png 530 _
+
+## References
+
+* Official k8s and Helm docs
+* kubernetes-sigs GitHub projects
+* AWS EKS Cluster architecture documentation
+* AWS Pod networking documentation
+* [Deep dive into kubernetes external trafic policies](https://www.asykim.com/blog/deep-dive-into-kubernetes-external-traffic-policies)
+* Calico project youtube channel
 
